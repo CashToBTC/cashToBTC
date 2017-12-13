@@ -1,0 +1,23 @@
+{
+  "name": "cashToBTC",
+  "version": "1.0.0",
+  "description": "",
+  "main": "contentScript.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CashToBTC/cashToBTC.git"
+  },
+  "keywords": [],
+  "author": "Abishak Kodi <abishak.kodi@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CashToBTC/cashToBTC/issues"
+  },
+  "homepage": "https://github.com/CashToBTC/cashToBTC#readme",
+  "dependencies": {
+    "axios": "^0.17.1"
+  }
+}

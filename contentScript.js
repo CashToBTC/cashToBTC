@@ -1,11 +1,23 @@
+// import axios from 'axios';
+window.alert('Running Extension');
+const testExp = new RegExp(/\$\S+/g);
+let rate = 17176.58; //current as of 12 DEC 17
+
+
+// axios.get('https://blockchain.info/ticker')
+//     .then((res)=>{
+//        console.log(res);
+//     })
+//     .catch((err)=>{
+//         console.log(err);
+//     });
+
 
 
 walkTheDOM(document.body);
 
 function walkTheDOM(node)
 {
-    // I stole this function from here:
-    // http://is.gd/mwZp7E
     var child, next;
 
     switch ( node.nodeType )
@@ -21,22 +33,36 @@ function walkTheDOM(node)
                 child = next;
             }
             break;
-
         case 3:
             handleText(node);
             break;
     }
 }
 
-function handleText(textNode)
-{
-    let convertedBTC = textNode.nodeValue;
+function handleText(textNode) {
+    let possibleDollarAmount = textNode.nodeValue;
 
-    if (convertedBTC)
-    convertedBTC = convertedBTC.replace(/\$\S+/g, "NEW VAL");
+    if (testExp.test(possibleDollarAmount)) {
+       // console.log('Detected Dollar Sign');
+        //console.log(possibleDollarAmount);
+        //console.log(makeIntoBitcoinString(possibleDollarAmount));
+    }
 
-    textNode.nodeValue = convertedBTC;
+    //var btcString = makeIntoBitcoinString(possibleDollarAmount);
+
+    possibleDollarAmount = possibleDollarAmount.replace(/\$\S+/g, "฿");
+
+    textNode.nodeValue = possibleDollarAmount;
 }
 
-window.alert('Running content');
+function makeIntoBitcoinString(currencyString) {
+    let dollarValue = currencyString.slice(1,currencyString.length);
+    let dollarFloat = parseFloat(dollarValue);
+    let bitcoinFloat = rate / dollarFloat;
+    let prettyBitcoinFloat = bitcoinFloat.toFixed(4)
+    let bitcoinString = "฿" + JSON.stringify(prettyBitcoinFloat);
+    return bitcoinString;
+}
+
+
 
