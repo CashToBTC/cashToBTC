@@ -1,14 +1,12 @@
 {
-
-    "name": "CashtoBTC",
-    "default_locale": "en",
-    "description": "This extension allows the user to change the price from dollars into BTC",
-    "version": "0.1",
-    "author":"D. Sentoso, S. Rodriguez, A. Kodi",
-    "background": {
-      "scripts":["background.js"],
-      "page": "background.html"
-    },
-    "permissions": []
-
+    "manifest_version": 2,
+    "name":"Cash to BTC",
+    "version": "1.0",
+    "content_scripts": [
+        {
+            "matches":["*://*/*"],
+            "js": ["contentScript.js"],
+            "run_at":"document_end"
+        }
+    ]
 }
