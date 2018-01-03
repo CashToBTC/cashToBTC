@@ -5,7 +5,7 @@
     "content_scripts": [
         {
             "matches":["*://*/*"],
-            "js": ["contentScript.js"],
+            "js": ["jquery-3.2.1.min.js", "contentScript.js"],
             "run_at":"document_end"
         }
     ],
