@@ -1,18 +1,6 @@
-// import axios from 'axios';
 window.alert('Running Extension');
 const testExp = new RegExp(/\$\S+/g);
 let rate = 17176.58; //current as of 12 DEC 17
-
-
-// axios.get('https://blockchain.info/ticker')
-//     .then((res)=>{
-//        console.log(res);
-//     })
-//     .catch((err)=>{
-//         console.log(err);
-//     });
-
-
 
 walkTheDOM(document.body);
 
@@ -40,6 +28,8 @@ function walkTheDOM(node)
 }
 
 function handleText(textNode) {
+
+  getCurrentRate();
     let possibleDollarAmount = textNode.nodeValue;
 
     if (testExp.test(possibleDollarAmount)) {
@@ -64,5 +54,21 @@ function makeIntoBitcoinString(currencyString) {
     return bitcoinString;
 }
 
+function getCurrentRate() {
 
+  var url = "https://api.cryptonator.com/api/full/btc-usd";
+      //JSON CALL
+      $.ajax({
+        type:"GET",
+        url:url,
+        async:false,
+        dataType: "json",
+        success: function(data){
+          console.log(data.ticker.price)
+        },
+        error: function(errorMessage){
+          alert("Error: Get Request failed")
+        }
+      });
 
+}
