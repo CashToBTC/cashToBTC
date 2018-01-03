@@ -3,6 +3,7 @@ const testExp = new RegExp(/\$\S+/g);
 let rate = 17176.58; //current as of 12 DEC 17
 
 walkTheDOM(document.body);
+getCurrentRate();
 
 function walkTheDOM(node)
 {
@@ -29,7 +30,6 @@ function walkTheDOM(node)
 
 function handleText(textNode) {
 
-  getCurrentRate();
     let possibleDollarAmount = textNode.nodeValue;
 
     if (testExp.test(possibleDollarAmount)) {
@@ -65,10 +65,11 @@ function getCurrentRate() {
         dataType: "json",
         success: function(data){
           console.log(data.ticker.price)
+
         },
         error: function(errorMessage){
-          alert("Error: Get Request failed")
+          alert("Error: search failed")
         }
-      });
+      })
 
 }
