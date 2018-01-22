@@ -29,9 +29,6 @@ function walkTheDOM(node) {
 
 function handleText(textNode) {
   let possibleDollarAmount = textNode.nodeValue;
-
-  //check if it has money
-
   if (testExp.test(possibleDollarAmount) && possibleDollarAmount.length < 20) {
     let cryptoAmount;
     if (possibleDollarAmount.includes('-')) {
@@ -41,9 +38,7 @@ function handleText(textNode) {
         cryptoAmount = makeIntoCryptoString(possibleDollarAmount);
         possibleDollarAmount = possibleDollarAmount.replace(/\$\S+/g, cryptoAmount);
     }
-
   }
-
   textNode.nodeValue = possibleDollarAmount;
 }
 
@@ -57,7 +52,6 @@ function makeIntoCryptoString(currencyString) {
 }
 
 function handleRangeOfValues(currencyRangeString){
-    //split into two strings
     let values = currencyRangeString.split("-");
     let trimmedValues = values.map((val)=>{
         return val.trim();
@@ -66,10 +60,8 @@ function handleRangeOfValues(currencyRangeString){
     return cryptoRange;
 }
 
-function getCurrentRate(cryptoType) {
-
-  var url = "https://api.cryptonator.com/api/full/btc-usd";
-  //JSON CALL
+function getCurrentRate(cryptoType = 'btc-usd') {
+  var url = "https://api.cryptonator.com/api/full/" + cryptoType;
   $.ajax({
     type: "GET",
     url: url,
