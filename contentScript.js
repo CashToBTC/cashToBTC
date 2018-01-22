@@ -1,8 +1,8 @@
 window.alert('Running Extension');
 const testExp = new RegExp(/\$\S+/g);
 
-let rate = getCurrentRate();
-console.log(rate);
+var rate;
+getCurrentRate();
 
 if (rate) {
   console.log('RATE EXISTS');
@@ -11,7 +11,6 @@ if (rate) {
 
 function walkTheDOM(node) {
   var child, next;
-
   switch (node.nodeType) {
     case 1:
     case 9:
@@ -31,26 +30,25 @@ function walkTheDOM(node) {
 
 function handleText(textNode) {
   let possibleDollarAmount = textNode.nodeValue;
-  console.log(textNode.nodeValue);
-  if (testExp.test(possibleDollarAmount)) {
-    //console.log('Detected Dollar Sign');
-    //console.log(possibleDollarAmount);
-    //console.log(makeIntoBitcoinString(possibleDollarAmount));
+  if (testExp.test(possibleDollarAmount) && possibleDollarAmount.length < 20) {
+    console.log('Detected Dollar Sign');
+    console.log(possibleDollarAmount);
+    let cryptoAmount = makeIntoCryptoString(possibleDollarAmount);
+    console.log(cryptoAmount);
+    possibleDollarAmount = possibleDollarAmount.replace(/\$\S+/g, "฿" + cryptoAmount);
   }
-  //var btcString = makeIntoBitcoinString(possibleDollarAmount);
-
-  possibleDollarAmount = possibleDollarAmount.replace(/\$\S+/g, "฿");
 
   textNode.nodeValue = possibleDollarAmount;
 }
 
-function makeIntoBitcoinString(currencyString) {
+function makeIntoCryptoString(currencyString) {
   let dollarValue = currencyString.slice(1, currencyString.length);
   let dollarFloat = parseFloat(dollarValue);
-  let bitcoinFloat = rate / dollarFloat;
-  let prettyBitcoinFloat = bitcoinFloat.toFixed(4)
-  let bitcoinString = "฿" + JSON.stringify(prettyBitcoinFloat);
-  return bitcoinString;
+  let cryptoFloat = dollarFloat / rate;
+  let prettycryptoFloat = cryptoFloat.toFixed(6);
+  let cryptoString = "฿" + prettycryptoFloat;
+  console.log('PARSED DOLLAR VAL', prettycryptoFloat);
+  return prettycryptoFloat;
 }
 
 function getCurrentRate() {
@@ -63,10 +61,9 @@ function getCurrentRate() {
     async: false,
     dataType: "json",
     success: function(data) {
-        console.log('SUCCESS');
-      console.log(data.ticker.price);
-      let rate = data.ticker.price;
-      console.log()
+      console.log('SUCCESS');
+      rate = data.ticker.price;
+      console.log(rate);
       return rate;
     },
     error: function(errorMessage) {
