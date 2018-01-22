@@ -1,6 +1,5 @@
 window.alert('Running Extension');
 const testExp = new RegExp(/\$\S+/g);
-
 var rate;
 getCurrentRate();
 
@@ -30,12 +29,19 @@ function walkTheDOM(node) {
 
 function handleText(textNode) {
   let possibleDollarAmount = textNode.nodeValue;
+
+  //check if it has money
+
   if (testExp.test(possibleDollarAmount) && possibleDollarAmount.length < 20) {
-    console.log('Detected Dollar Sign');
-    console.log(possibleDollarAmount);
-    let cryptoAmount = makeIntoCryptoString(possibleDollarAmount);
-    console.log(cryptoAmount);
-    possibleDollarAmount = possibleDollarAmount.replace(/\$\S+/g, "฿" + cryptoAmount);
+    let cryptoAmount;
+    if (possibleDollarAmount.includes('-')) {
+        console.log('Range?', possibleDollarAmount);
+        possibleDollarAmount = handleRangeOfValues(possibleDollarAmount);
+    } else {
+        cryptoAmount = makeIntoCryptoString(possibleDollarAmount);
+        possibleDollarAmount = possibleDollarAmount.replace(/\$\S+/g, cryptoAmount);
+    }
+
   }
 
   textNode.nodeValue = possibleDollarAmount;
@@ -47,11 +53,20 @@ function makeIntoCryptoString(currencyString) {
   let cryptoFloat = dollarFloat / rate;
   let prettycryptoFloat = cryptoFloat.toFixed(6);
   let cryptoString = "฿" + prettycryptoFloat;
-  console.log('PARSED DOLLAR VAL', prettycryptoFloat);
-  return prettycryptoFloat;
+  return cryptoString;
 }
 
-function getCurrentRate() {
+function handleRangeOfValues(currencyRangeString){
+    //split into two strings
+    let values = currencyRangeString.split("-");
+    let trimmedValues = values.map((val)=>{
+        return val.trim();
+    });
+    let cryptoRange = makeIntoCryptoString(trimmedValues[0]) + ' - ' + makeIntoCryptoString(trimmedValues[1]);
+    return cryptoRange;
+}
+
+function getCurrentRate(cryptoType) {
 
   var url = "https://api.cryptonator.com/api/full/btc-usd";
   //JSON CALL
