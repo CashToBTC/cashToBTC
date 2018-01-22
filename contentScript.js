@@ -1,67 +1,7 @@
-window.alert('Running Extension');
-const testExp = new RegExp(/\$\S+/g);
-var rate;
 getCurrentRate();
 
-if (rate) {
-  console.log('RATE EXISTS');
-  walkTheDOM(document.body);
-}
-
-function walkTheDOM(node) {
-  var child, next;
-  switch (node.nodeType) {
-    case 1:
-    case 9:
-    case 11:
-      child = node.firstChild;
-      while (child) {
-        next = child.nextSibling;
-        walkTheDOM(child);
-        child = next;
-      }
-      break;
-    case 3:
-      handleText(node);
-      break;
-  }
-}
-
-function handleText(textNode) {
-  let possibleDollarAmount = textNode.nodeValue;
-  if (testExp.test(possibleDollarAmount) && possibleDollarAmount.length < 20) {
-    let cryptoAmount;
-    if (possibleDollarAmount.includes('-')) {
-        console.log('Range?', possibleDollarAmount);
-        possibleDollarAmount = handleRangeOfValues(possibleDollarAmount);
-    } else {
-        cryptoAmount = makeIntoCryptoString(possibleDollarAmount);
-        possibleDollarAmount = possibleDollarAmount.replace(/\$\S+/g, cryptoAmount);
-    }
-  }
-  textNode.nodeValue = possibleDollarAmount;
-}
-
-function makeIntoCryptoString(currencyString) {
-  let dollarValue = currencyString.slice(1, currencyString.length);
-  let dollarFloat = parseFloat(dollarValue);
-  let cryptoFloat = dollarFloat / rate;
-  let prettycryptoFloat = cryptoFloat.toFixed(6);
-  let cryptoString = "฿" + prettycryptoFloat;
-  return cryptoString;
-}
-
-function handleRangeOfValues(currencyRangeString){
-    let values = currencyRangeString.split("-");
-    let trimmedValues = values.map((val)=>{
-        return val.trim();
-    });
-    let cryptoRange = makeIntoCryptoString(trimmedValues[0]) + ' - ' + makeIntoCryptoString(trimmedValues[1]);
-    return cryptoRange;
-}
-
 function getCurrentRate(cryptoType = 'btc-usd') {
-  var url = "https://api.cryptonator.com/api/full/" + cryptoType;
+  let url = "https://api.cryptonator.com/api/full/" + cryptoType;
   $.ajax({
     type: "GET",
     url: url,
@@ -69,9 +9,8 @@ function getCurrentRate(cryptoType = 'btc-usd') {
     dataType: "json",
     success: function(data) {
       console.log('SUCCESS');
-      rate = data.ticker.price;
-      console.log(rate);
-      return rate;
+      let exchangeRate = data.ticker.price;
+      changeToCrypto(exchangeRate);
     },
     error: function(errorMessage) {
       alert("Error: search failed")
@@ -79,4 +18,62 @@ function getCurrentRate(cryptoType = 'btc-usd') {
     }
   })
 
+}
+
+function changeToCrypto(exchangeRate){
+  walkTheDOM(document.body, exchangeRate);
+  let time = new Date().toLocaleString();
+  window.alert('Changed to current Bitcoin exchange Rate(' + exchangeRate +  ') as of ' + time );
+}
+
+function walkTheDOM(node, exchangeRate) {
+  let child, next;
+  switch (node.nodeType) {
+    case 1:
+    case 9:
+    case 11:
+      child = node.firstChild;
+      while (child) {
+        next = child.nextSibling;
+        walkTheDOM(child, exchangeRate);
+        child = next;
+      }
+      break;
+    case 3:
+      handleText(node, exchangeRate);
+      break;
+  }
+}
+
+function handleText(textNode, exchangeRate) {
+  let testExp = new RegExp(/\$\S+/g);
+  let possibleDollarAmount = textNode.nodeValue;
+  if (testExp.test(possibleDollarAmount) && possibleDollarAmount.length < 20) {
+    let cryptoAmount;
+    if (possibleDollarAmount.includes('-')) {
+        possibleDollarAmount = handleRangeOfValues(possibleDollarAmount, exchangeRate);
+    } else {
+        cryptoAmount = makeIntoCryptoString(possibleDollarAmount, exchangeRate);
+        possibleDollarAmount = possibleDollarAmount.replace(/\$\S+/g, cryptoAmount);
+    }
+  }
+  textNode.nodeValue = possibleDollarAmount;
+}
+
+function makeIntoCryptoString(currencyString, exchangeRate) {
+  let dollarValue = currencyString.slice(1, currencyString.length);
+  let dollarFloat = parseFloat(dollarValue);
+  let cryptoFloat = dollarFloat / exchangeRate;
+  let prettycryptoFloat = cryptoFloat.toFixed(6);
+  let cryptoString = "฿" + prettycryptoFloat;
+  return cryptoString;
+}
+
+function handleRangeOfValues(currencyRangeString, rate){
+    let values = currencyRangeString.split("-");
+    let trimmedValues = values.map((val)=>{
+        return val.trim();
+    });
+    let cryptoRange = makeIntoCryptoString(trimmedValues[0], rate) + ' - ' + makeIntoCryptoString(trimmedValues[1], rate);
+    return cryptoRange;
 }

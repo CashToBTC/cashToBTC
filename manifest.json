@@ -1,14 +1,23 @@
 {
-    "manifest_version": 2,
-    "name":"Cash to BTC",
-    "version": "1.0",
-    "content_scripts": [
-        {
-            "matches":["*://*/*"],
-            "js": ["jquery-3.2.1.min.js", "contentScript.js"],
-            "run_at":"document_end"
-        }
-    ],
-    "permissions":[
-        "https://blockchain.info/ticker"]
+  "manifest_version": 2,
+  "name": "Cash to BTC",
+  "version": "1.0",
+  "browser_action":
+  {
+    "default_title": "Change to Bitcoin!"
+      },
+  // "content_scripts": [
+  // {
+  //   "matches": ["*://*/*"],
+  //   "js": ["jquery-3.2.1.min.js", "contentScript.js"]
+  // }],
+  "background":
+  {
+    "scripts": ["jquery-3.2.1.min.js", "background.js"]
+  },
+
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ]
 }
