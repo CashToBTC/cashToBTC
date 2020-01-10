@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/CashToBTC/cashToBTC#readme",
   "dependencies": {
-    "axios": "^0.17.1"
+    "axios": "^0.19.1"
   }
 }
